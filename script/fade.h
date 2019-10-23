@@ -35,9 +35,7 @@ public:
 	void UpdateFade(void);
 	void DrawFade(void);
 	static void SetFade(CManager::MODE modeNext);
-	FADE GetFade(void);
-	static HRESULT Load(void);
-	static void Unload(void);
+	static FADE GetFade(void);
 
 private:
 

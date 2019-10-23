@@ -4,6 +4,10 @@
 // Author：tanaka rikiya
 //
 //=============================================================================
+
+//=============================================================================
+//インクルード
+//=============================================================================
 #include "renderer.h"
 #include "scene2D.h"
 #include "manager.h"
@@ -12,7 +16,7 @@
 #include "camera.h"
 
 //=============================================================================
-//こンストラクタ
+//コンストラクタ
 //=============================================================================
 CScene2D::CScene2D(OBJECT_TYPE type) :CScene(type)
 {
@@ -20,11 +24,12 @@ CScene2D::CScene2D(OBJECT_TYPE type) :CScene(type)
 	m_pVtxBuff = NULL;//頂点バッファへのポインタ
 	CScene2D::m_CountAnim = NULL;
 	CScene2D::nPattenAnim = NULL;
-
-	m_pos  = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Size_X = 0.0f;
 	m_Size_Y = 0.0f;
+	m_bDraw = true;
+
 
 }
 //=============================================================================
@@ -64,9 +69,9 @@ void CScene2D::Init(void)
 
 	//頂点の設定
 	pVtx[0].pos = m_pos + D3DXVECTOR3(-m_Size_X, -m_Size_Y, 0.0f);
-	pVtx[1].pos = m_pos + D3DXVECTOR3( m_Size_X, -m_Size_Y, 0.0f);
-	pVtx[2].pos = m_pos + D3DXVECTOR3(-m_Size_X,  m_Size_Y, 0.0f);
-	pVtx[3].pos = m_pos + D3DXVECTOR3( m_Size_X,  m_Size_Y, 0.0f);
+	pVtx[1].pos = m_pos + D3DXVECTOR3(m_Size_X, -m_Size_Y, 0.0f);
+	pVtx[2].pos = m_pos + D3DXVECTOR3(-m_Size_X, m_Size_Y, 0.0f);
+	pVtx[3].pos = m_pos + D3DXVECTOR3(m_Size_X, m_Size_Y, 0.0f);
 
 	pVtx[0].rhw = 1.0f;
 	pVtx[1].rhw = 1.0f;
@@ -116,16 +121,16 @@ void CScene2D::Update(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	pVtx[0].pos = m_pos + D3DXVECTOR3(m_Size_X*sinf(atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot + D3DX_PI),
-										m_Size_Y*cosf(atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot + D3DX_PI), 0.0f) + CameraPos;
+		m_Size_Y*cosf(atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot + D3DX_PI), 0.0f) + CameraPos;
 
-	pVtx[1].pos = m_pos +	D3DXVECTOR3(m_Size_X*sinf(-atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot + D3DX_PI),
-										m_Size_Y*cosf(-atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot + D3DX_PI), 0.0f) + CameraPos;
+	pVtx[1].pos = m_pos + D3DXVECTOR3(m_Size_X*sinf(-atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot + D3DX_PI),
+		m_Size_Y*cosf(-atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot + D3DX_PI), 0.0f) + CameraPos;
 
-	pVtx[2].pos = m_pos +	D3DXVECTOR3(m_Size_X*sinf(-atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot),
-										m_Size_Y*cosf(-atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot), 0.0f) + CameraPos;
+	pVtx[2].pos = m_pos + D3DXVECTOR3(m_Size_X*sinf(-atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot),
+		m_Size_Y*cosf(-atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot), 0.0f) + CameraPos;
 
-	pVtx[3].pos = m_pos +	D3DXVECTOR3(m_Size_X*sinf( atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot),
-										m_Size_Y*cosf( atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot), 0.0f) + CameraPos;
+	pVtx[3].pos = m_pos + D3DXVECTOR3(m_Size_X*sinf(atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot),
+		m_Size_Y*cosf(atan2f(m_Size_X / 2, m_Size_Y / 2) + m_fRot), 0.0f) + CameraPos;
 
 	pVtx[0].col = m_col;
 	pVtx[1].col = m_col;
@@ -146,21 +151,25 @@ void CScene2D::Draw(void)
 
 	//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 
+	if (m_bDraw)
+	{
+		//頂点バッファをデバイスのデータストリームにバインド
+		pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
 
-	//頂点バッファをデバイスのデータストリームにバインド
-	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
+		//テクスチャの設定
+		pDevice->SetTexture(0, m_pTexture);
 
-	//テクスチャの設定
-	pDevice->SetTexture(0, m_pTexture);
+		//バックバッファとフロントバッファの入れかえ
+		pDevice->SetFVF(FVF_VERTEX_2D);
 
-	//バックバッファとフロントバッファの入れかえ
-	pDevice->SetFVF(FVF_VERTEX_2D);
-
-	//ポリゴン描画
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+		//ポリゴン描画
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
 
-	//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+
+	}
+
 }
 //=============================================================================
 // テクスチャを設定
@@ -271,11 +280,11 @@ void CScene2D::SetGauge(float nWight, float nHeight)
 	D3DXVECTOR3 CameraPos = pCamera->GetCameraPos();
 	// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-	
-		pVtx[0].pos= D3DXVECTOR3(m_pos.x , m_pos.y,0.0f) + CameraPos;
-		pVtx[1].pos= D3DXVECTOR3(m_pos.x+nWight, m_pos.y, 0.0f) + CameraPos;
-		pVtx[2].pos= D3DXVECTOR3(m_pos.x, m_pos.y+nHeight, 0.0f) + CameraPos;
-		pVtx[3].pos= D3DXVECTOR3(m_pos.x+nWight, m_pos.y+nHeight, 0.0f) + CameraPos;
+
+	pVtx[0].pos = D3DXVECTOR3(m_pos.x, m_pos.y, 0.0f) + CameraPos;
+	pVtx[1].pos = D3DXVECTOR3(m_pos.x + nWight, m_pos.y, 0.0f) + CameraPos;
+	pVtx[2].pos = D3DXVECTOR3(m_pos.x, m_pos.y + nHeight, 0.0f) + CameraPos;
+	pVtx[3].pos = D3DXVECTOR3(m_pos.x + nWight, m_pos.y + nHeight, 0.0f) + CameraPos;
 
 	// 頂点データをアンロックする
 	m_pVtxBuff->Unlock();

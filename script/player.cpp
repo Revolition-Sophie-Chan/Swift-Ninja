@@ -4,6 +4,10 @@
 // Author：tanaka rikiya
 //
 //=============================================================================
+
+//=============================================================================
+//インクルード
+//=============================================================================
 #include <time.h>
 #include "renderer.h"
 #include "player.h"
@@ -24,8 +28,11 @@
 #include"load.h"
 #include "time.h"
 #include "texture.h"
-#include"sound.h"
+#include "sound.h"
 
+//=============================================================================
+//静的メンバ変数の初期化
+//=============================================================================
 LPDIRECT3DTEXTURE9 CPlayer::m_apTexturePolygon[MAX_PLAYER] = {};
 CPlayer *CPlayer::m_pPlayer = NULL;
 CSave *CPlayer::m_Save = NULL;
@@ -61,7 +68,7 @@ CPlayer::PLAYERSTATE CPlayer::PlayerState = CPlayer::PLAYERSTATE_NORMAL;
 #define FEVER_COUNT			(30)	//Feverタイム突入に必要な撃破数
 
 //=============================================================================
-//こンストラクタ
+//コンストラクタ
 //=============================================================================
 CPlayer::CPlayer(OBJECT_TYPE type = OBJECT_TYPE_PLAYER) : CScene2D(type)
 {
@@ -333,17 +340,17 @@ void CPlayer::Update(void)
 	m_randColor2 = (float)m_Color2;
 	m_randColor2 /= 10;
 
-	//--------------------------------------------------------
+//--------------プレイヤーの状態遷移--------------
 	switch (PlayerState)
 	{
-		//通常状態
+	//通常状態
 	case PLAYERSTATE_NORMAL:
 		SetRot(0.0f);
 		SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		nCountDamage = 0;
 		break;
 
-		//攻撃中
+	//攻撃中
 	case PLAYERSTATE_ATK:
 		bDoubleJump = true;
 		SetRot(m_AttackRot);
@@ -360,7 +367,7 @@ void CPlayer::Update(void)
 		}
 		break;
 
-		//スキルが使えない状態
+	//スキルが使えない状態
 	case PLAYERSTATE_COOLDOWN:
 		nCountAttack = 0;
 		nCountCoolTime++;
@@ -372,6 +379,7 @@ void CPlayer::Update(void)
 		}
 		break;
 
+	//ダメージを受けたとき
 	case PLAYERSTATE_DAMAGE:
 		MoveState = PLAYERMOVESTATE_DAMAGE;
 		nCountDamage++;
@@ -387,9 +395,9 @@ void CPlayer::Update(void)
 		}
 		break;
 
+	//ダメージを受けた後の無敵時間
 	case PLAYERSTATE_UNDYING:
 		nCountDamage++;
-
 		if (nCountDamage % 5 == 0 && nCountDamage % 10 != 0)
 		{
 			SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
@@ -405,6 +413,7 @@ void CPlayer::Update(void)
 		}
 		break;
 
+	//HPがなくなった時
 	case PLAYERSTATE_DEATH:
 		bFinish = true;
 		SetRot(0.0f);
@@ -420,6 +429,8 @@ void CPlayer::Update(void)
 			nCountFade = 0;
 		}
 		break;
+
+	//タイマーがゼロになった時
 	case PLAYERSTATE_FINISH:
 		bFinish = true;
 		SetRot(0.0f);
@@ -436,29 +447,11 @@ void CPlayer::Update(void)
 		break;
 	}
 
-
+//--------------プレイヤーのモーション管理--------------
 	switch (MoveState)
 	{
-	case PLAYERMOVESTATE_MOVE:
-		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_MOVE]);
-		if (nDirectionMove == 1)
-		{
-			if (nCountAnim % MOVESPEED_WALK == 0)
-			{
-				nPattenAnim = (nPattenAnim + 1) % 4;
-				SetAnim(4, nPattenAnim, 1);
-			}
-		}
-		else
-		{
-			if (nCountAnim % MOVESPEED_WALK == 0)
-			{
-				nPattenAnim = (nPattenAnim + 1) % 4;
-				SetAnim(4, nPattenAnim, 0);
-			}
-		}
-		break;
 
+//待機モーション
 	case PLAYERMOVESTATE_WAIT:
 		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_WAIT]);
 		if (nLife > 3)
@@ -501,6 +494,29 @@ void CPlayer::Update(void)
 
 		}
 		break;
+
+//移動モーション
+	case PLAYERMOVESTATE_MOVE:
+		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_MOVE]);
+		if (nDirectionMove == 1)
+		{
+			if (nCountAnim % MOVESPEED_WALK == 0)
+			{
+				nPattenAnim = (nPattenAnim + 1) % 4;
+				SetAnim(4, nPattenAnim, 1);
+			}
+		}
+		else
+		{
+			if (nCountAnim % MOVESPEED_WALK == 0)
+			{
+				nPattenAnim = (nPattenAnim + 1) % 4;
+				SetAnim(4, nPattenAnim, 0);
+			}
+		}
+		break;
+
+//攻撃中モーション
 	case PLAYERMOVESTATE_ATTACK:
 		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_ATTACK]);
 		if (nDirectionMove == 1)
@@ -520,6 +536,8 @@ void CPlayer::Update(void)
 			}
 		}
 		break;
+
+//ジャンプ(上昇中)
 	case PLAYERMOVESTATE_JUMPUP:
 		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_JUMPUP]);
 		if (nDirectionMove == 0)
@@ -530,9 +548,9 @@ void CPlayer::Update(void)
 		{
 			SetAnim(1, nPattenAnim, 1);
 		}
-
 		break;
 
+//ジャンプ(下降中)
 	case PLAYERMOVESTATE_JUMPDOWN:
 		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_JUMPDOWN]);
 		if (nDirectionMove == 0)
@@ -545,6 +563,7 @@ void CPlayer::Update(void)
 		}
 		break;
 
+//二段ジャンプ
 	case PLAYERMOVESTATE_DOUBLEJUMP:
 		if (nDirectionMove == 1)
 		{
@@ -565,6 +584,7 @@ void CPlayer::Update(void)
 		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_DOUBLEJUMP]);
 		break;
 
+//ダメージモーション
 	case PLAYERMOVESTATE_DAMAGE:
 		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_DAMAGE]);
 		if (nDirectionMove == 0)
@@ -577,6 +597,7 @@ void CPlayer::Update(void)
 		}
 		break;
 
+//戦闘不能
 	case PLAYERMOVESTATE_DEATH:
 		BindTexture(m_apTexturePolygon[PLAYERMOVESTATE_DEATH]);
 		if (nDirectionMove == 0)
@@ -594,10 +615,10 @@ void CPlayer::Update(void)
 	if (m_pos.y >= 536)
 	{
 		m_pos.y = 536;
+		//接地判定
 		bDoubleJumpAnim = false;
 		bJump = true;
 	}
-
 	if (m_pos.y < 526)
 	{
 		bJump = false;
@@ -611,6 +632,8 @@ void CPlayer::Update(void)
 	{
 		m_pos.x = 1260.0f;
 	}
+
+	//プレイヤーが画面外にいるかどうか
 	if (m_pos.y <= 0)
 	{
 		bRoof = true;
@@ -626,13 +649,6 @@ void CPlayer::Update(void)
 			m_pos.x = 255.0f;
 		}
 	}
-
-	//D3DXVECTOR3 Screenpos = m_pos + pCamera->m_pos;
-
-	//if (Screenpos.x<400 ||Screenpos.x > 600)
-	//{
-	//	CCamera::MoveCamera(m_move);
-	//}
 
 	//画面を揺らす処理
 	if (bShake == true)
@@ -650,8 +666,10 @@ void CPlayer::Update(void)
 		}
 	}
 
+	//フィーバータイム中
 	if (bFever == true)
 	{
+		CTexture::bINFever = true;
 		nCountFever++;
 		if (nCountFever == 1)
 		{
@@ -679,9 +697,9 @@ void CPlayer::Update(void)
 			nFever = 0;
 		}
 	}
-
 	else
 	{
+		CTexture::bINFever = false;
 		nCountFever = 0;
 		if (nFever >= FEVER_COUNT)
 		{
@@ -690,6 +708,8 @@ void CPlayer::Update(void)
 			bFever = true;
 		}
 	}
+
+
 	if (CManager::GetMode() == CManager::MODE_GAME)
 	{
 		if (((CTime*)pTime)->m_nTime == 0)
@@ -828,6 +848,7 @@ bool CPlayer::CollisionPlayer(D3DXVECTOR3 pos)
 
 			if (objType == CScene::OBJECT_TYPE_ENEMY)
 			{
+				//敵との接触判定
 				if (PlayerState == PLAYERSTATE_NORMAL&&bFever == false)
 				{
 					D3DXVECTOR3 EnemyPos = ((CEnemy*)pScene)->GetEnemyPos();
@@ -839,6 +860,7 @@ bool CPlayer::CollisionPlayer(D3DXVECTOR3 pos)
 						HitPlayer(-1);
 					}
 				}
+				//攻撃判定
 				else if (PlayerState == PLAYERSTATE_ATK)
 				{
 					if (Estate == CEnemy::ENEMYSTATE_NORMAL)

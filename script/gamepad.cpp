@@ -48,9 +48,8 @@ HRESULT CGamepad::Init(HINSTANCE hInstance, HWND hWnd)
 		hr = m_pInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoyCallbackGamepad, NULL, DIEDFL_FORCEFEEDBACK | DIEDFL_ATTACHEDONLY);
 		if (FAILED(hr) || m_apDIDevGamepad[m_nCntPad] == NULL)
 		{
-#ifdef _DEBUG
 			MessageBox(hWnd, "DirectInput方式のジョイパッドがありません\n使用する場合はゲームを再起動してください", "警告", MB_ICONWARNING);
-#endif
+
 			return hr;
 		}
 

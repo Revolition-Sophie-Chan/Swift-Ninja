@@ -5,14 +5,12 @@
 //
 //=========================================================================
 
-//=========================================================================
-// インクルードファイル 
-//========================================================================= 
+//=============================================================================
+//インクルード
+//=============================================================================
 #include "gauge.h"
-
 #include "player.h"
 #include "enemy.h"
-
 #include "manager.h"
 #include "renderer.h"
 
@@ -29,7 +27,7 @@ LPDIRECT3DTEXTURE9 CGauge::m_pTextureGauge[UITYPE_MAX] = {};
 //=========================================================================
 // 初期化処理
 //=========================================================================
-CGauge::CGauge(OBJECT_TYPE type = OBJECT_TYPE_UI) : CScene2D(type)
+CGauge::CGauge(OBJECT_TYPE type = OBJECT_TYPE_GAUGE) : CScene2D(type)
 {
 }
 
@@ -101,7 +99,7 @@ void CGauge::Init(float fWight, float fHeight)
 	nCountTexture = 0;
 	m_MaxGauge = 0;
 	// オブジェクトの種類の設定
-	SetObjType(CScene::OBJECT_TYPE_UI);
+	SetObjType(CScene::OBJECT_TYPE_GAUGE);
 
 }
 
@@ -159,7 +157,7 @@ void CGauge::HPManager(void)
 						if (pPlayer->bFever == true)
 						{
 							SetColor(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));
-							nFeverTime-=0.000121f;
+							nFeverTime -= 0.000121f;
 							SetGauge(m_fWigth*nFeverTime, m_fHeight);
 						}
 						else

@@ -47,6 +47,9 @@ public:
 		TYPE_FEVER,
 		TYPE_IN_FEVER01,
 		TYPE_IN_FEVER02,
+		TYPE_PAUSECONTINUE,
+		TYPE_PAUSERETRY,
+		TYPE_PAUSEQUIT,
 		TYPE_FINISH,
 		TYPE_TUTORIAL00,
 		TYPE_TUTORIAL01,
@@ -64,8 +67,8 @@ public:
 	 static void Unload(void);
 	 static CTexture *Create(D3DXVECTOR3 TEXpos,float Height,float Weight, TEXTURE_TYPE Texture);
 	 TEXTURE_TYPE GetTextureType(void);
+	 static bool bINFever;
 private:
-	bool bINFever;
 	int nCountTexture;
 	//VERTEX_2D m_aVertex[4];
 	static LPDIRECT3DTEXTURE9 m_pTexture[TYPE_MAX];//テクスチャへのポインタ

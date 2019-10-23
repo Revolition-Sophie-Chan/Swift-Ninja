@@ -30,6 +30,7 @@ class CGamepad;
 class CRankingAll;
 class CSound;
 class CTutorial;
+class CPause;
 
 //=============================================================================
 //ƒNƒ‰ƒX
@@ -58,11 +59,13 @@ public:
 		MODE_TITLE = 0,
 		MODE_TUTORIAL,
 		MODE_GAME,
+		MODE_PAUSE,
 		MODE_RANKING,
 		MODE_MAX
 	};
 	static MODE m_Mode;
 	static void SetMode(MODE mode);
+	static CManager::MODE SetPause(CManager::MODE mode);
 	static MODE GetMode(void);
 private:
 
@@ -71,6 +74,7 @@ private:
 	static CInputkeyborad *m_pKeyborad;
 	static CTitle *m_pTitle;
 	static CGame *m_pGame;
+	static CPause *m_pPause;
 	static CGamepad *m_pGamepad;
 	static CRankingAll *m_pRanking;
 	static CTutorial *m_pTutorial;

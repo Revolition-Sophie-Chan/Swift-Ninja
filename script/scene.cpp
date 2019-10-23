@@ -4,17 +4,25 @@
 // Author：tanaka rikiya
 //
 //=============================================================================
+
+//=============================================================================
+//インクルード
+//=============================================================================
 #include"renderer.h"
 #include"scene.h"
 #include"game.h"
 #include "manager.h"
 
+//=============================================================================
+//静的メンバ変数の初期化
+//=============================================================================
 CScene *CScene::m_apScene[OBJECT_TYPE_MAX][MAX_TEXTURE] = {};
 int CScene::m_NumAll = 0;
 int CScene::nCountSlow = 0;
-//============================================================================================
-//こンストラクタ
-//============================================================================================
+
+//=============================================================================
+//コンストラクタ
+//=============================================================================
 CScene::CScene(OBJECT_TYPE type)
 {
 	m_bId = 0;
@@ -30,9 +38,9 @@ CScene::CScene(OBJECT_TYPE type)
 		}
 	}
 }
-//============================================================================================
+//=============================================================================
 //デストラクタ
-//============================================================================================
+//=============================================================================
 CScene::~CScene()
 {
 }
@@ -60,9 +68,10 @@ void CScene::UpdateAll(void)
 {
 	CGame *pGame = CGame::GetGame();
 	nCountSlow++;
+
 	if (CPlayer::bFinish == false)
 	{
-		if (pGame->bDamage == false && pGame->bPause == false || CManager::m_Mode != CManager::MODE_GAME)
+		if (CManager::m_Mode != CManager::MODE_PAUSE)
 		{
 			for (int nCntType = 0; nCntType < OBJECT_TYPE_MAX; nCntType++)
 			{
@@ -75,9 +84,22 @@ void CScene::UpdateAll(void)
 				}
 			}
 		}
+		else if(CManager::m_Mode == CManager::MODE_PAUSE)
+		{
+			for (int nCntType = 0; nCntType < OBJECT_TYPE_MAX; nCntType++)
+			{
+				for (int nCount = 0; nCount < MAX_TEXTURE; nCount++)
+				{
+					if (m_apScene[OBJECT_TYPE_UI][nCount] != NULL)
+					{
+						m_apScene[OBJECT_TYPE_UI][nCount]->Update();
+					}
+				}
+			}
+		}
 	}
 	else
-	{
+	{	//終了時にスローになる
 		if (nCountSlow % 3==0)
 		{
 			for (int nCntType = 0; nCntType < OBJECT_TYPE_MAX; nCntType++)

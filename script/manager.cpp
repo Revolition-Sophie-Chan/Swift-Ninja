@@ -4,6 +4,10 @@
 // Author：tanaka rikiya
 //
 //=============================================================================
+
+//=============================================================================
+//インクルード
+//=============================================================================
 #include"manager.h"
 #include"renderer.h"
 #include"scene.h"
@@ -24,18 +28,19 @@
 #include"ranking.h"
 #include"rankingall.h"
 #include"tutorial.h"
+#include "pause.h"
 //=============================================================================
 //プロトタイプ宣言
 //=============================================================================
 LRESULT CALLBACK WindowsProc(HWND hWnd, UINT uMsg, WPARAM wPARAM, LPARAM lPARAM);
 
 //=============================================================================
-//静的メンバ変数
+//静的メンバ変数の初期化
 //=============================================================================
 CRenderer *CManager::m_pRenderer = NULL;
 //CPlayer *CManager::m_pPlayer = NULL;
 CInputkeyborad *CManager::m_pKeyborad = NULL;
-CManager::MODE CManager::m_Mode= MODE_TITLE;
+CManager::MODE CManager::m_Mode = MODE_TITLE;
 //CBase *CManager::m_Base = new CTitle;
 CTitle *CManager::m_pTitle = NULL;
 CGame *CManager::m_pGame = NULL;
@@ -43,9 +48,10 @@ CTutorial *CManager::m_pTutorial = NULL;
 CGamepad *CManager::m_pGamepad = NULL;
 CRankingAll *CManager::m_pRanking = NULL;
 CSound *CManager::m_pSound = NULL;
+CPause *CManager::m_pPause = NULL;
 
 //============================================================================================
-//こンストラクタ
+//コンストラクタ
 //============================================================================================
 CManager::CManager()
 {
@@ -61,27 +67,28 @@ CManager::~CManager()
 //=============================================================================
 // ポリゴンの初期化
 //=============================================================================
-HRESULT CManager::Init(HINSTANCE hinstance,HWND hWnd, bool bWindow)
+HRESULT CManager::Init(HINSTANCE hinstance, HWND hWnd, bool bWindow)
 {
 
-		m_pRenderer = new CRenderer;
-		m_pKeyborad = new CInputkeyborad;
-		m_pGamepad = new CGamepad;
-		m_pSound = new CSound;
-		m_pGamepad->Init(hinstance, hWnd);
-		m_pKeyborad->Init(hinstance, hWnd);
-		m_pRenderer->Init(hWnd, bWindow);
-		m_pSound->InitSound(hWnd);
-		//if (m_Base != NULL)
-		//{
-		//	m_Base->Init();
-		//}
+	m_pRenderer = new CRenderer;
+	m_pKeyborad = new CInputkeyborad;
+	m_pGamepad = new CGamepad;
+	m_pSound = new CSound;
+	m_pGamepad->Init(hinstance, hWnd);
+	m_pKeyborad->Init(hinstance, hWnd);
+	m_pRenderer->Init(hWnd, bWindow);
+	m_pSound->InitSound(hWnd);
+	//if (m_Base != NULL)
+	//{
+	//	m_Base->Init();
+	//}
 
 
-		//m_Mode = MODE_TITLE;//開始時のモード
+	//m_Mode = MODE_TITLE;//開始時のモード
 
-		SetMode(m_Mode);
-		return S_OK;
+
+	SetMode(m_Mode);
+	return S_OK;
 
 }
 //=============================================================================
@@ -119,6 +126,9 @@ void CManager::Update(void)
 	case MODE_GAME:
 		m_pGame->Update();
 		break;
+	case MODE_PAUSE:
+		m_pPause->Update();
+		break;
 	case MODE_RANKING:
 		m_pRanking->Update();
 		break;
@@ -137,24 +147,45 @@ void CManager::Draw(void)
 void CManager::SetMode(MODE mode)
 {
 	m_pSound->StopSound();
-	switch (m_Mode)
+	if (mode != MODE_PAUSE)
 	{
-	case MODE_TITLE:
-		m_pTitle->Uninit();
-		break;
-	case MODE_TUTORIAL:
-		m_pTutorial->Uninit();
-		break;
-	case MODE_GAME:
-		m_pGame->Uninit();
-		break;
-	case MODE_RANKING:
-		m_pRanking->Uninit();
-		break;
+		switch (m_Mode)
+		{
+		case MODE_TITLE:
+
+			m_pTitle->Uninit();
+			break;
+
+		case MODE_TUTORIAL:
+			m_pTutorial->Uninit();
+			break;
+
+		case MODE_GAME:
+			m_pGame->Uninit();
+			break;
+
+		case MODE_PAUSE:
+			break;
+
+		case MODE_RANKING:
+			m_pRanking->Uninit();
+			break;
+		}
+		CScene::ReleaseAll();
 	}
-	CScene::ReleaseAll();
+	//else if(mode == MODE_PAUSE&&CPause::GetPauseState() == CPause::PAUSESTATE_QUIT)
+	//{
+	//	switch (m_Mode)
+	//	{
+	//	case MODE_GAME:
+	//		m_pSound->StopSound();
+	//		m_pGame->Uninit();
+	//		break;
+	//	}
+	//}
 
 	m_Mode = mode;
+
 	switch (mode)
 	{
 	case MODE_TITLE:
@@ -165,15 +196,48 @@ void CManager::SetMode(MODE mode)
 		m_pTutorial = CTutorial::Create();
 		break;
 	case MODE_GAME:
-		m_pSound->PlaySound(CSound::SOUND_LABEL_BATTLE);
-		m_pGame = CGame::Create();
+		if (mode != MODE_PAUSE)
+		{
+			m_pSound->PlaySound(CSound::SOUND_LABEL_BATTLE);
+			m_pGame = CGame::Create();
+
+			//ポーズもクリエイト
+			m_pPause = CPause::Create();
+			//描画をfalse
+			m_pPause->SetDraw(false);
+		}
 		break;
+	//case MODE_PAUSE:
+	//	//描画をtrue
+	//	m_pPause->SetDraw(true);
+	//	break;
 	case MODE_RANKING:
 		m_pSound->PlaySound(CSound::SOUND_LABEL_RANKING);
 		m_pRanking = CRankingAll::Create();
 		break;
 	}
+	//}
 }
+//=============================================================================
+// ポーズ設定
+//=============================================================================
+CManager::MODE CManager::SetPause(CManager::MODE mode)
+{
+	switch (mode)
+	{
+	case MODE_GAME:
+		//描画を
+		m_pPause->SetDraw(false);
+		break;
+	case MODE_PAUSE:
+		//描画をfalse
+		m_pPause->SetDraw(true);
+		break;
+	}
+	return m_Mode = mode;
+}
+
+
 //=============================================================================
 // モード設定
 //=============================================================================
@@ -192,7 +256,7 @@ CInputkeyborad *CManager::GetInputKeyboard(void)
 	return m_pKeyborad;
 }
 
-CInputkeyborad *CManager::m_pInputKeyboard (void)
+CInputkeyborad *CManager::m_pInputKeyboard(void)
 {
 	return m_pKeyborad;
 }

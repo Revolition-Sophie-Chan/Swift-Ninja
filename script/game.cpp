@@ -4,6 +4,10 @@
 // Author：tanaka rikiya
 //
 //=============================================================================
+
+//=============================================================================
+//インクルード
+//=============================================================================
 #include"manager.h"
 #include"renderer.h"
 #include"scene.h"
@@ -31,13 +35,17 @@
 #include"gamepad.h"
 #include"here.h"
 
+//=============================================================================
+//静的メンバ変数の初期化
+//=============================================================================
 CGame *CGame::m_pGame = NULL;
 bool CGame::bDamage = NULL;
 bool CGame::bPause = NULL;
+
+//=============================================================================
+//マクロ定義
+//=============================================================================
 #define DAMAGE_STOP (5)
-//=============================================================================
-//静的メンバ変数
-//=============================================================================
 //=============================================================================
 //コンストラクタ
 //=============================================================================
@@ -194,11 +202,11 @@ void CGame::Update(void)
 		{
 			((CTime*)pNumber)->AddTime(-1);
 		}
-		if (pInputKeyborad->GetKeyboardPress(DIK_P) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_START))
+		if (pInputKeyborad->GetKeyboardTrigger(DIK_P) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_START))
 		{
 			if (CPlayer::PlayerState != CPlayer::PLAYERSTATE_FINISH || CPlayer::PlayerState != CPlayer::PLAYERSTATE_DEATH)
 			{
-				bPause = true;
+				CManager::SetPause(CManager::MODE_PAUSE);
 			}
 		}
 	}
@@ -216,9 +224,9 @@ void CGame::Update(void)
 		}
 		else
 		{
-			if (pInputKeyborad->GetKeyboardPress(DIK_P) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_START))
+			if (pInputKeyborad->GetKeyboardTrigger(DIK_P) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_START))
 			{
-				bPause = false;
+				CManager::SetPause(CManager::MODE_PAUSE);
 			}
 		}
 	}

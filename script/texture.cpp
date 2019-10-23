@@ -4,6 +4,10 @@
 // Author：tanaka rikiya
 //
 //=============================================================================
+
+//=============================================================================
+//インクルード
+//=============================================================================
 #include"renderer.h"
 #include"texture.h"
 #include"explosion.h"
@@ -12,11 +16,16 @@
 #include"game.h"
 #include"player.h"
 
+//=============================================================================
+//静的メンバ変数の初期化
+//=============================================================================
 LPDIRECT3DTEXTURE9 CTexture::m_pTexture[TYPE_MAX] = {};
+bool CTexture::bINFever=false;
+
 //=============================================================================
-//こンストラクタ
+//コンストラクタ
 //=============================================================================
-CTexture::CTexture(OBJECT_TYPE type = OBJECT_TYPE_BG) : CScene2D(type)
+CTexture::CTexture(OBJECT_TYPE type = OBJECT_TYPE_UI) : CScene2D(type)
 {
 
 }
@@ -81,8 +90,10 @@ void CTexture::Update(void)
 	m_pos += m_move;
 	CPlayer *pPlayer = CPlayer::GetPlayer();
 
-	if (TextureType == TYPE_ENTER|| TextureType == TYPE_START)
+	switch (TextureType)
 	{
+	case TYPE_ENTER:
+	case TYPE_START:
 		//点滅
 		if (nCountTexture % 20 == 0 && nCountTexture % 40 != 0)
 		{
@@ -92,52 +103,47 @@ void CTexture::Update(void)
 		{
 			SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		}
-	}
-	if (TextureType == TYPE_IN_FEVER01|| TextureType == TYPE_IN_FEVER02)
-	{
-		if (CPlayer::bFever == true)
+		break;
+	case TYPE_IN_FEVER01:
+		if (bINFever == true)
 		{
-			bINFever = true;
+
+			if (m_pos.x >= 500.0f&& m_pos.x <= 700.0f)
+			{
+				m_move.x = 2.6f;
+			}
+			else
+			{
+				m_move.x = 100.6f;
+			}
+
+			if (m_pos.x >= 1780.0f)
+			{
+				m_move.x = 0.0f;
+			}
 		}
 		else
 		{
-			bINFever = false;
+			m_pos = (D3DXVECTOR3(-700.0f, 400.0f, 0.0f));
 		}
+		break;
+	case TYPE_IN_FEVER02:
 		if (bINFever == true)
 		{
-			if (TextureType == TYPE_IN_FEVER01)
+			if (m_pos.x >= 595.0f&& m_pos.x <= 800.0f)
 			{
-				if (m_pos.x >= 500.0f&& m_pos.x <= 700.0f)
-				{
-					m_move.x = 2.6f;
-				}
-				else
-				{
-					m_move.x = 100.6f;
-				}
-
-				if (m_pos.x >= 1780.0f)
-				{
-					m_move.x = 0.0f;
-				}
+				m_move.x = -2.6f;
 			}
-			if (TextureType == TYPE_IN_FEVER02)
+			else
 			{
-				if (m_pos.x >= 595.0f&& m_pos.x <= 800.0f)
-				{
-					m_move.x = -2.6f;
-				}
-				else
-				{
-					m_move.x = -100.6f;
-				}
-				if (m_pos.x <= -700.0f)
-				{
-					m_move.x = 0.0f;
-				}
+				m_move.x = -100.6f;
+			}
+			if (m_pos.x <= -700.0f)
+			{
+				m_move.x = 0.0f;
 			}
 		}
-		else 
+		else
 		{
 			if (TextureType == TYPE_IN_FEVER01)
 			{
@@ -148,10 +154,9 @@ void CTexture::Update(void)
 				m_pos = (D3DXVECTOR3(1900.0f, 200.0f, 0.0f));
 			}
 		}
-	}
-	if (TextureType == TYPE_FINISH)
-	{
-		if (CPlayer::PlayerState == CPlayer::PLAYERSTATE_FINISH|| CPlayer::PlayerState == CPlayer::PLAYERSTATE_DEATH)
+		break;
+	case TYPE_FINISH:
+		if (CPlayer::PlayerState == CPlayer::PLAYERSTATE_FINISH || CPlayer::PlayerState == CPlayer::PLAYERSTATE_DEATH)
 		{
 			SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		}
@@ -159,11 +164,11 @@ void CTexture::Update(void)
 		{
 			SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 		}
+		break;
 	}
 
 	SetPosition(m_pos);
 	SetMove(m_move);
-
 }
 //=============================================================================
 // ポリゴンの描画
@@ -196,6 +201,9 @@ HRESULT CTexture::Load(void)
 	D3DXCreateTextureFromFile(pDevice, "Data/Texture/fever.png", &m_pTexture[TYPE_FEVER]);				//フィーバーゲージを示す
 	D3DXCreateTextureFromFile(pDevice, "Data/Texture/in_fever.png", &m_pTexture[TYPE_IN_FEVER01]);		//フィーバー突入演出その1
 	D3DXCreateTextureFromFile(pDevice, "Data/Texture/10_count.png", &m_pTexture[TYPE_IN_FEVER02]);		//フィーバー突入演出その2
+	D3DXCreateTextureFromFile(pDevice, "Data/Texture/continue.png", &m_pTexture[TYPE_PAUSECONTINUE]);	//つづける
+	D3DXCreateTextureFromFile(pDevice, "Data/Texture/retry.png", &m_pTexture[TYPE_PAUSERETRY]);		//やりなおす
+	D3DXCreateTextureFromFile(pDevice, "Data/Texture/quit.png", &m_pTexture[TYPE_PAUSEQUIT]);		//タイトルにもどる
 	D3DXCreateTextureFromFile(pDevice, "Data/Texture/Game_set.png", &m_pTexture[TYPE_FINISH]);			//ゲーム終了
 	D3DXCreateTextureFromFile(pDevice, "Data/Texture/tutorial.png", &m_pTexture[TYPE_TUTORIAL00]);		//チュートリアル
 	D3DXCreateTextureFromFile(pDevice, "Data/Texture/advise.png", &m_pTexture[TYPE_TUTORIAL01]);		//チュートリアル

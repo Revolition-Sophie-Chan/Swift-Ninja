@@ -50,6 +50,8 @@ public:
 	void InitTex(int Height, float Weight);
 	void TextureMove(void);
 
+	bool m_bDraw;
+
 private:
 	D3DXVECTOR3 m_pos;
 	D3DXVECTOR3 m_move;
