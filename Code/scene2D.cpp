@@ -62,7 +62,6 @@ void CScene2D::Init(void)
 	//頂点データの範囲をロックし、頂点バッファへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	//頂点の設定
 	pVtx[0].pos = m_pos + D3DXVECTOR3(-m_Size_X, -m_Size_Y, 0.0f);
 	pVtx[1].pos = m_pos + D3DXVECTOR3(m_Size_X, -m_Size_Y, 0.0f);
 	pVtx[2].pos = m_pos + D3DXVECTOR3(-m_Size_X, m_Size_Y, 0.0f);
@@ -78,7 +77,6 @@ void CScene2D::Init(void)
 	pVtx[2].col = m_col;
 	pVtx[3].col = m_col;
 
-	////テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
 	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);

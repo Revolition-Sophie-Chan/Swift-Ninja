@@ -65,8 +65,7 @@ HRESULT CNumber::Init()
 
 	//頂点データの範囲をロックし、頂点バッファへのポインタを取得
 	m_pVtxBuffNumber->Lock(0, 0, (void**)&pVtx, 0);
-
-	//頂点の設定	
+	
 	pVtx[0].pos = m_pos + D3DXVECTOR3(-m_size_X, -m_size_Y, 0.0f);
 	pVtx[1].pos = m_pos + D3DXVECTOR3(m_size_X, -m_size_Y, 0.0f);
 	pVtx[2].pos = m_pos + D3DXVECTOR3(-m_size_X, m_size_Y, 0.0f);
@@ -82,7 +81,6 @@ HRESULT CNumber::Init()
 	pVtx[2].col = m_col;
 	pVtx[3].col = m_col;
 
-	////テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.1f*m_nNumber, 0.0f);
 	pVtx[1].tex = D3DXVECTOR2(0.1f*m_nNumber+0.1f, 0.0f);
 	pVtx[2].tex = D3DXVECTOR2(0.1f*m_nNumber, 1.0f);

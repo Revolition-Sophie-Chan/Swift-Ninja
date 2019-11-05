@@ -126,7 +126,10 @@ void CTutorial::Update(void)
 
 	if (pInputKeyborad->GetKeyboardTrigger(DIK_RETURN) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_START))
 	{
-		pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
+		if (CFade::GetFade() == CManager::MODE_TUTORIAL)
+		{
+			pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
+		}
 		CFade::SetFade(CManager::MODE_GAME);
 	}
 

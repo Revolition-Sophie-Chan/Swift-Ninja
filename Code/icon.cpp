@@ -103,7 +103,6 @@ HRESULT CIcon::Load(void)
 {
 	CRenderer *pRenderer = CManager::GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
-
 	D3DXCreateTextureFromFile(pDevice, "Data/Texture/Ability_Icon.png", &m_pTextureIcon);
 	return S_OK;
 }

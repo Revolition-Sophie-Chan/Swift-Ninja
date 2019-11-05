@@ -129,10 +129,9 @@ HRESULT CHere::Load(void)
 //=============================================================================
 void CHere::Unload(void)
 {
-
-		if (m_pTextureHere != NULL)
-		{
-			m_pTextureHere->Release();
-			m_pTextureHere = NULL;
-		}
+	if (m_pTextureHere != NULL)
+	{
+		m_pTextureHere->Release();
+		m_pTextureHere = NULL;
+	}
 }

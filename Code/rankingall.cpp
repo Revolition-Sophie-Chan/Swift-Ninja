@@ -31,21 +31,21 @@ CRanking *CRankingAll::pRanking = NULL;
 #define FADE_COUNT (600)
 
 //=============================================================================
-// コンストラクタ
+//コンストラクタ
 //=============================================================================
 CRankingAll::CRankingAll()
 {
 }
 
 //=============================================================================
-// デストラクタ
+//デストラクタ
 //=============================================================================
 CRankingAll::~CRankingAll()
 {
 }
 
 //=============================================================================
-// 生成処理
+//生成処理
 //=============================================================================
 CRankingAll * CRankingAll::Create()
 {
@@ -56,7 +56,7 @@ CRankingAll * CRankingAll::Create()
 }
 
 //=============================================================================
-// 初期化
+//初期化
 //=============================================================================
 HRESULT CRankingAll::Init(void)
 {
@@ -68,7 +68,7 @@ HRESULT CRankingAll::Init(void)
 }
 
 //=============================================================================
-// 終了
+//終了
 //=============================================================================
 void CRankingAll::Uninit(void)
 {
@@ -77,7 +77,7 @@ void CRankingAll::Uninit(void)
 }
 
 //=============================================================================
-// 更新
+//更新
 //=============================================================================
 void CRankingAll::Update(void)
 {
@@ -93,7 +93,10 @@ void CRankingAll::Update(void)
 		if (pKeyboard->GetKeyboardTrigger(DIK_RETURN) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_START) ||
 			FadeCount >= FADE_COUNT)
 		{
-			pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
+			if (CFade::GetFade() == CManager::MODE_RANKING)
+			{
+				pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
+			}
 			CFade::SetFade(CManager::MODE_TITLE);
 			FadeCount = 0;
 		}
@@ -102,14 +105,17 @@ void CRankingAll::Update(void)
 	{//ゲームから遷移したときには時間で自動遷移しない
 		if (pKeyboard->GetKeyboardTrigger(DIK_RETURN) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_START))
 		{
-			pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
+			if (CFade::GetFade() == CManager::MODE_RANKING)
+			{
+				pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
+			}
 			CFade::SetFade(CManager::MODE_TITLE);
 		}
 	}
 }
 
 //=============================================================================
-// 描画
+//描画
 //=============================================================================
 void CRankingAll::Draw(void)
 {

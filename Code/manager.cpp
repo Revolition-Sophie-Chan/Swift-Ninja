@@ -161,7 +161,6 @@ void CManager::SetMode(MODE mode)
 		case MODE_RANKING:
 			m_pRanking->Uninit();
 			break;
-
 		}
 		CScene::ReleaseAll();
 	}
@@ -174,9 +173,11 @@ void CManager::SetMode(MODE mode)
 		m_pSound->PlaySound(CSound::SOUND_LABEL_TITLE);
 		m_pTitle = CTitle::Create();
 		break;
+
 	case MODE_TUTORIAL:
 		m_pTutorial = CTutorial::Create();
 		break;
+
 	case MODE_GAME:
 		if (mode != MODE_PAUSE)
 		{
@@ -189,6 +190,7 @@ void CManager::SetMode(MODE mode)
 			m_pPause->SetDraw(false);
 		}
 		break;
+
 	case MODE_RANKING:
 		m_pSound->PlaySound(CSound::SOUND_LABEL_RANKING);
 		m_pRanking = CRankingAll::Create();

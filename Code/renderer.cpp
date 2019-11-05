@@ -107,7 +107,7 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
 #ifdef _DEBUG
-	//
+	//フォントや文字の場所の設定
 	D3DXCreateFont(m_pD3DDevice,
 		30,
 		20,
@@ -168,7 +168,7 @@ void CRenderer::Draw(void)
 	{
 		CScene::DrawAll();
 #ifdef _DEBUG
-		//
+		//FPSを表示
 		DrawFPS();
 #endif
 		//描画の終了
@@ -187,11 +187,9 @@ void CRenderer::Draw(void)
 void CRenderer::DrawFPS(void)
 {
 	m_FPS = GetFPS();
-
 	RECT rect = { 0,0,1280,720 };
 	char aStr[256];
 	wsprintf(&aStr[0], "FPS:%d\nプレイヤーの状態%d\nモーション%d", m_FPS, CPlayer::State, CPlayer::MState);
-
 	m_pFont->DrawText(NULL, &aStr[0], -1, &rect, DT_LEFT, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 }
 #endif

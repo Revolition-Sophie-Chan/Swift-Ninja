@@ -68,7 +68,6 @@ void CFade::InitFade()
 	pVtx[2].col = m_FadeColor;
 	pVtx[3].col = m_FadeColor;
 
-	////テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
 	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);

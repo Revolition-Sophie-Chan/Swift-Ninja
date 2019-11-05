@@ -76,7 +76,6 @@ HRESULT CGamepad::Init(HINSTANCE hInstance, HWND hWnd)
 			MessageBox(hWnd, "ジョイパッドが見つかりませんでした", "警告", MB_ICONWARNING);
 			return hr;
 		}
-
 		if (m_dwNumForceFeedbackAxis > 2)
 		{
 			m_dwNumForceFeedbackAxis = 2;

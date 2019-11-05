@@ -32,7 +32,6 @@
 //Ã“Iƒƒ“ƒo•Ï”‚Ì‰Šú‰»
 //=============================================================================
 LPDIRECT3DTEXTURE9 CPlayer::m_apTexturePolygon[MAX_PLAYER] = {};
-
 CSave *CPlayer::m_Save		= NULL;
 CLoad *CPlayer::m_Load		= NULL;
 CEnemy *CEnemy::m_pEnemy	= NULL;
@@ -104,7 +103,6 @@ void CPlayer::Init(void)
 {
 	CScene2D::Init();
 	SetObjType(CScene::OBJECT_TYPE_PLAYER);
-
 	nScore = 0;
 	nFever = 0;
 	m_Color0	 = 0;

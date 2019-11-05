@@ -80,20 +80,20 @@ void CLoad::LoadData(void)
 
 	int nCntLoad;
 
-	// ファイル開
+	// ファイルを開く
 	pFile = fopen(SAVE_FILE_NAME, "r");
 
-	// 開けた
+	//開けたとき
 	if (pFile != NULL)
 	{
 		for (nCntLoad = 0; nCntLoad < MAX_LOAD; nCntLoad++)
 		{
 			fscanf(pFile, "%d", &m_aLoad[nCntLoad].nPoint); // 名前
 		}
-		// ファイル
+		//ファイルを閉じる
 		fclose(pFile);
 	}
-	// 開けない
+	//開けないとき
 	else
 	{
 		printf("開けませんでした\n");

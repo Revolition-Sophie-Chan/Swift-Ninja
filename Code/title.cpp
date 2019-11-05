@@ -90,7 +90,10 @@ void CTitle::Update(void)
 	if (pInputKeyborad->GetKeyboardTrigger(DIK_RETURN) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_START) ||
 		pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_B) || pGamePad->GetTrigger(0, CGamepad::JOYPADKEY_A) && CManager::GetMode() != CManager::MODE_GAME)
 	{
-		pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
+		if (CFade::GetFade() == CManager::MODE_TITLE)
+		{
+			pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
+		}
 		CFade::SetFade(CManager::MODE_TUTORIAL);
 	}
 	else if (FadeCount >= FADE_COUNT)

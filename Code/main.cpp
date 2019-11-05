@@ -28,6 +28,7 @@ LRESULT CALLBACK WindowsProc(HWND hWnd, UINT uMsg, WPARAM wPARAM, LPARAM lPARAM)
 #ifdef _DEBUG
 int g_nCountFPS = 0;
 #endif
+
 //=============================================================================
 //ÉÅÉCÉìä÷êî
 //=============================================================================
